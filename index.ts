@@ -68,7 +68,7 @@ const runGame = (): number => {
 
     // player 1 always goes first
     // player 1 places down two cards which are the lowest non-joker non-spade cards
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 2; i++) {
       const lowestCard = player1Hand
         .filter((card) => card.suit !== "S" && card.suit !== "Joker")
         .sort((a, b) => (a.rank) - (b.rank))[0];
