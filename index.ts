@@ -1,31 +1,31 @@
 interface Card {
   suit: string;
-  rank: string;
+  rank: number;
   belongsTo: number;
   isCounter?: boolean;
 }
 const suits = ["H", "D", "C", "S"];
 const ranks = [
-  "2",
-  "3",
-  "4",
-  "5",
-  "6",
-  "7",
-  "8",
-  "9",
-  "10",
-  "J",
-  "Q",
-  "K",
-  "A",
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11, // J
+  12,
+  13,
+  14, // A
 ];
 const unshuffledDeck = [
   ...suits.flatMap((suit) =>
     ranks.map((rank) => ({ suit, rank, belongsTo: 0 }))
   ),
-  { suit: "Joker", rank: "Joker", belongsTo: 0 },
-  { suit: "Joker", rank: "Joker", belongsTo: 0 },
+  { suit: "Joker", rank: 15, belongsTo: 0 },
+  { suit: "Joker", rank: 15, belongsTo: 0 },
 ];
 
 // immutable shuffle
@@ -70,8 +70,8 @@ const runGame = (): number => {
     // player 1 places down two cards which are the lowest non-joker non-spade cards
     for (let i = 0; i < 1; i++) {
       const lowestCard = player1Hand
-        .filter((card) => card.suit !== "S" && card.rank !== "Joker")
-        .sort((a, b) => ranks.indexOf(a.rank) - ranks.indexOf(b.rank))[0];
+        .filter((card) => card.suit !== "S" && card.suit !== "Joker")
+        .sort((a, b) => (a.rank) - (b.rank))[0];
       // if no card available, skip turn
       if (!lowestCard) break;
       board.push(lowestCard);
@@ -101,8 +101,8 @@ const runGame = (): number => {
       { player1Wins: 0, player2Wins: 0 },
     );
 
-    const doesPlayer1HaveJoker = !!player1Hand.find((c) => c.rank === "Joker");
-    const doesPlayer2HaveJoker = !!player2Hand.find((c) => c.rank === "Joker");
+    const doesPlayer1HaveJoker = !!player1Hand.find((c) => c.suit === "Joker");
+    const doesPlayer2HaveJoker = !!player2Hand.find((c) => c.suit === "Joker");
     if (doesPlayer1HaveJoker && !doesPlayer2HaveJoker) {
       stats.player1Wins++;
       return;
@@ -134,19 +134,20 @@ const runGame = (): number => {
       const card = board[i];
       const counter = player1Hand.find(
         (c) =>
-          (c.suit === "C" && card.suit === "D") ||
-          (c.suit === "D" && card.suit === "H") ||
-          (c.suit === "H" && card.suit === "C") ||
-          (c.suit === "S" && card.suit !== "S" &&
-            ranks.indexOf(c.rank) > ranks.indexOf(card.rank)) ||
-          (c.suit === card.suit &&
-            ranks.indexOf(c.rank) > ranks.indexOf(card.rank)),
+          ((c.suit === "C" && card.suit === "D") ||
+            (c.suit === "D" && card.suit === "H") ||
+            (c.suit === "H" && card.suit === "C") ||
+            (c.suit === "S" && card.suit !== "S")) &&
+          ((c.rank) > (card.rank)),
+        //    ||
+        // (c.suit === card.suit &&
+        //   ranks.indexOf(c.rank) > ranks.indexOf(card.rank)),
       );
       if (counter) {
         board[i] = { ...counter, isCounter: true };
         player1Hand.splice(player1Hand.indexOf(counter), 1);
         didPlay = true;
-      } else if (player1Hand.length === 1 && player1Hand[0].rank === "Joker") {
+      } else if (player1Hand.length === 1 && player1Hand[0].suit === "Joker") {
         board[i] = { ...player1Hand[0], isCounter: true };
         player1Hand.splice(0, 1);
         didPlay = true;
@@ -157,8 +158,8 @@ const runGame = (): number => {
 
     // player 2 then plays the lowest card in their hand that isn't a joker or spade
     const lowestCard = player1Hand
-      .filter((card) => card.suit !== "S" && card.rank !== "Joker")
-      .sort((a, b) => ranks.indexOf(a.rank) - ranks.indexOf(b.rank))[0];
+      .filter((card) => card.suit !== "S" && card.suit !== "Joker")
+      .sort((a, b) => (a.rank) - (b.rank))[0];
     if (lowestCard) {
       board.push(lowestCard);
       player1Hand.splice(player1Hand.indexOf(lowestCard), 1);
@@ -185,20 +186,20 @@ const runGame = (): number => {
       if (board[i].isCounter || board[i].belongsTo === 2) continue;
       const card = board[i];
       const counter = player2Hand.find(
-        (c) =>
-          (c.suit === "C" && card.suit === "D") ||
+        (c) => (((c.suit === "C" && card.suit === "D") ||
           (c.suit === "D" && card.suit === "H") ||
           (c.suit === "H" && card.suit === "C") ||
-          (c.suit === "S" && card.suit !== "S" &&
-            ranks.indexOf(c.rank) > ranks.indexOf(card.rank)) ||
-          (c.suit === card.suit &&
-            ranks.indexOf(c.rank) > ranks.indexOf(card.rank)),
+          (c.suit === "S" && card.suit !== "S")) &&
+          ((c.rank) > (card.rank))),
+        // ) ||
+        // (c.suit === card.suit &&
+        //   ranks.indexOf(c.rank) > ranks.indexOf(card.rank)),
       );
       if (counter) {
         board[i] = { ...counter, isCounter: true };
         player2Hand.splice(player2Hand.indexOf(counter), 1);
         didPlay = true;
-      } else if (player2Hand.length === 1 && player2Hand[0].rank === "Joker") {
+      } else if (player2Hand.length === 1 && player2Hand[0].suit === "Joker") {
         board[i] = { ...player2Hand[0], isCounter: true };
         player2Hand.splice(0, 1);
         didPlay = true;
@@ -209,8 +210,8 @@ const runGame = (): number => {
 
     // player 2 then plays the lowest card in their hand that isn't a joker or spade
     const lowestCard = player2Hand
-      .filter((card) => card.suit !== "S" && card.rank !== "Joker")
-      .sort((a, b) => ranks.indexOf(a.rank) - ranks.indexOf(b.rank))[0];
+      .filter((card) => card.suit !== "S" && card.suit !== "Joker")
+      .sort((a, b) => (a.rank) - (b.rank))[0];
     if (lowestCard) {
       board.push(lowestCard);
       player2Hand.splice(player2Hand.indexOf(lowestCard), 1);
