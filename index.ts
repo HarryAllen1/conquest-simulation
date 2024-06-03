@@ -1,25 +1,5 @@
-interface Card {
-  suit: string;
-  rank: number;
-  belongsTo: number;
-  isCounter?: boolean;
-}
-const suits = ["H", "D", "C", "S"];
-const ranks = [
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11, // J
-  12,
-  13,
-  14, // A
-];
+import { Card, ranks, shuffle, suits } from "./utils.ts";
+
 const unshuffledDeck = [
   ...suits.flatMap((suit) =>
     ranks.map((rank) => ({ suit, rank, belongsTo: 0 }))
@@ -27,18 +7,6 @@ const unshuffledDeck = [
   { suit: "Joker", rank: 15, belongsTo: 0 },
   { suit: "Joker", rank: 15, belongsTo: 0 },
 ];
-
-// immutable shuffle
-const shuffle = (deck: Card[]) => {
-  const deckCopy = [...deck];
-  for (let i = 0; i < 10; i++) {
-    for (let i = deckCopy.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * i);
-      [deckCopy[i], deckCopy[j]] = [deckCopy[j], deckCopy[i]];
-    }
-  }
-  return deckCopy;
-};
 
 const runGame = (): number => {
   const shuffledDeck = shuffle(unshuffledDeck);
@@ -68,7 +36,7 @@ const runGame = (): number => {
 
     // player 1 always goes first
     // player 1 places down two cards which are the lowest non-joker non-spade cards
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 1; i++) {
       const lowestCard = player1Hand
         .filter((card) => card.suit !== "S" && card.suit !== "Joker")
         .sort((a, b) => (a.rank) - (b.rank))[0];
